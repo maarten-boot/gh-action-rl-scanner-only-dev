@@ -156,6 +156,7 @@ scan_with_store()
 {
     local - # auto restore the next line on function end
     set +e # we do our own error handling in this func
+    set -x
 
     # rl-store will be initalized if it is empty
     docker run --rm -u $(id -u):$(id -g) \
