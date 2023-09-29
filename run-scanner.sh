@@ -165,10 +165,11 @@ scan_with_store()
     -v "${A_DIR}/:/packages:ro" \
     -v "${R_PATH}/:/report" \
     reversinglabs/rl-scanner:latest \
-        rl-scan --package-path="/packages/${A_FILE}" \
+        rl-scan \
             --rl-store=${RL_STORE} \
-            --package-path=${RL_PACKAGE_URL} \
+            --purl=${RL_PACKAGE_URL} \
             --replace \
+            --package-path="/packages/${A_FILE}" \
             --report-path=/report \
             --report-format=all \
             ${DIFF_WITH} 1>1 2>2
