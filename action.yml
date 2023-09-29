@@ -7,6 +7,10 @@ branding:
   icon: 'shield'
   color: 'purple'
 
+# Input ids with uppercase letters are converted to lowercase during runtime.
+# We recommend using lowercase input ids.
+# https://docs.github.com/en/actions/creating-actions/metadata-syntax-for-github-actions#inputs
+
 inputs:
   artifact-to-scan:
     description: 'Path to the package file (artifact) you want to scan'
@@ -17,6 +21,7 @@ inputs:
     required: false
     default: MyReportDir
     type: string
+
   rl-store:
     description: 'Path to a directory where a rl-store has been initialized'
     required: false
@@ -37,6 +42,28 @@ inputs:
     required: false
     default: false
     type: bool
+
+  rl-proxy-server:
+    description: 'An optional proxy server to use'
+    required: false
+    default: ""
+    type: string
+  rl-proxy-port:
+    description: 'An optional proxy server port to use'
+    required: false
+    default: ""
+    type: string
+  rl-proxy-user:
+    description: 'An optional proxy server user to use'
+    required: false
+    default: ""
+    type: string
+  rl-proxy-password:
+    description: 'An optional proxy server password to use'
+    required: false
+    default: ""
+    type: string
+
 outputs:
   description:
     description: 'The result of the action: a string terminating in FAIL or PASS'
@@ -58,4 +85,8 @@ runs:
         RL_PACKAGE_URL: ${{ inputs.rl-package-url }}
         RL_DIFF_WITH: ${{ inputs.rl-diff-with }}
         RL_VERBOSE: ${{ inputs.rl-verbose }}
+        RLSECURE_PROXY_SERVER: ${{ inputs.rl-proxy-server }}
+        RLSECURE_PROXY_PORT: ${{ inputs.rl-proxy-port }}
+        RLSECURE_PROXY_USER: ${{ inputs.rl-proxy-user }}
+        RLSECURE_PROXY_PASSWORD: ${{ inputs.rl-proxy-password }}
 
