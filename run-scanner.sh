@@ -3,11 +3,11 @@
 do_verbose()
 {
     cat <<!
-REPORT_PATH:              ${REPORT_PATH}
-MY_ARTIFACT_TO_SCAN_PATH: ${MY_ARTIFACT_TO_SCAN_PATH}
-RL_STORE:                 ${RL_STORE}
-RL_PACKAGE_URL:           ${RL_PACKAGE_URL}
-RL_DIFF_WITH:             ${RL_DIFF_WITH}
+REPORT_PATH:              ${REPORT_PATH:-No path specified}
+MY_ARTIFACT_TO_SCAN_PATH: ${MY_ARTIFACT_TO_SCAN_PATH:-No path specified}
+RL_STORE:                 ${RL_STORE:-No path specified for RL_STORE: no diff scan can be executed}
+RL_PACKAGE_URL:           ${RL_PACKAGE_URL:-No Package Url given: no diff scan can be executed}
+RL_DIFF_WITH:             ${RL_DIFF_WITH:-No diff with was requested}
 RL_VERBOSE:               ${RL_VERBOSE}
 !
 }
@@ -42,7 +42,7 @@ scan_no_store()
     reversinglabs/rl-scanner:latest \
         rl-scan --package-path="/packages/${A_FILE}" \
             --report-path=/report \
-            --report-format=all}
+            --report-format=all
 }
 
 main()
