@@ -167,7 +167,7 @@ scan_with_store()
     -v "${RL_STORE}/rl-store" \
     reversinglabs/rl-scanner:latest \
         rl-scan \
-            --rl-store /rl-store \
+            --rl-store=/rl-store \
             --purl=${RL_PACKAGE_URL} \
             --replace \
             --package-path="/packages/${A_FILE}" \
