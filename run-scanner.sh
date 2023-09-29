@@ -164,9 +164,10 @@ scan_with_store()
     ${PROXY_DATA} \
     -v "${A_DIR}/:/packages:ro" \
     -v "${R_PATH}/:/report" \
+    -v "${RL_STORE}/rl-store" \
     reversinglabs/rl-scanner:latest \
         rl-scan \
-            --rl-store=${RL_STORE} \
+            --rl-store /rl-store \
             --purl=${RL_PACKAGE_URL} \
             --replace \
             --package-path="/packages/${A_FILE}" \
