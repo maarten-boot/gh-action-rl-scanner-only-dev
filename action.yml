@@ -11,10 +11,12 @@ inputs:
   artifact-to-scan:
     description: 'Path to the package file (artifact) you want to scan'
     required: true
+    type: string
   report-path:
     description: 'Path to a directory where the reports will be saved (must be a new directory, with a path relative to the github.workspace)'
     required: false
     default: MyReportDir
+    type: string
   rl-store:
     description: 'Path to a directory where a rl-store has been initialized'
     required: false
@@ -30,7 +32,11 @@ inputs:
     required: false
     default: ""
     type: string
-
+  rl-verbose:
+    description: 'Make the scanner more verbose'
+    required: false
+    default: false
+    type: bool
 outputs:
   description:
     description: 'The result of the action: a string terminating in FAIL or PASS'
@@ -40,10 +46,16 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - run: echo "${{ github.action_path }}" >> $GITHUB_PATH
+      shell: bash
     - id: rl-scanner
+      run: ${{ github.action_path }}/run-scanner.sh
       shell: bash
       env:
         REPORT_PATH: ${{ inputs.report-path }}
         MY_ARTIFACT_TO_SCAN_PATH: ${{ inputs.artifact-to-scan }}
-      run: |
-        ./run-scanner.sh
+        RL_STORE: ${{ inpots.rl-store}}
+        RL_PACKAGE_URL: ${{ inputs.rl-package-url }}
+        RL_DIFF_WITH: ${{ inputs.rl-diff-with }}
+        RL_VERBOSE: ${{ inputs.rl-verbose }}
+
