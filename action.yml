@@ -54,7 +54,7 @@ runs:
       env:
         REPORT_PATH: ${{ inputs.report-path }}
         MY_ARTIFACT_TO_SCAN_PATH: ${{ inputs.artifact-to-scan }}
-        RL_STORE: ${{ inpots.rl-store}}
+        RL_STORE: ${{ inputs.rl-store}}
         RL_PACKAGE_URL: ${{ inputs.rl-package-url }}
         RL_DIFF_WITH: ${{ inputs.rl-diff-with }}
         RL_VERBOSE: ${{ inputs.rl-verbose }}
