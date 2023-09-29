@@ -1,13 +1,7 @@
 #! /bin/bash
 
-
 do_verbose()
 {
-    if [ "${RL_VERBOSE}" == "false" ]
-    then
-        return
-    fi
-
     cat <<!
 REPORT_PATH:              ${REPORT_PATH:-No path specified}
 MY_ARTIFACT_TO_SCAN_PATH: ${MY_ARTIFACT_TO_SCAN_PATH:-No path specified}
@@ -23,14 +17,35 @@ RLSECURE_PROXY_PASSWORD:  ${RLSECURE_PROXY_PASSWORD:-No proxy pass was provided}
 !
 }
 
-prep_report()
+validate_params()
 {
     if [ -z "${REPORT_PATH}" ]
     then
-        echo "::error FATAL: no report path provided"
+        echo "::error FATAL: no 'report-path' provided"
         exit 101
     fi
 
+    if [ -z "${MY_ARTIFACT_TO_SCAN_PATH}" ]
+    then
+        echo "::error FATAL: no 'artifact-to-scan' provided"
+        exit 101
+    fi
+
+    if [ -z "${RLSECURE_ENCODED_LICENSE}" ]
+    then
+        echo "::error FATAL: no 'RLSECURE_ENCODED_LICENSE' is set in your environment"
+        exit 101
+    fi
+
+    if [ -z "${RLSECURE_SITE_KEY}" ]
+    then
+        echo "::error FATAL: no 'RLSECURE_SITE_KEY' is set in your environment"
+        exit 101
+    fi
+}
+
+prep_report()
+{
     if [ -d "${REPORT_PATH}" ]
     then
         if rmdir "${REPORT_PATH}"
@@ -52,6 +67,11 @@ prep_paths()
     A_PATH=$( realpath "${MY_ARTIFACT_TO_SCAN_PATH}" )
     A_DIR=$( dirname "${A_PATH}" )
     A_FILE=$( basename "${A_PATH}" )
+
+    if [ ! -z "${RL_STORE}" ]
+    then
+        RL_STORE=$(realpath ${RL_STORE})
+    fi
 }
 
 extractProjectFromPackageUrl()
@@ -99,7 +119,8 @@ makeDiffWith()
 
     if [ ! -d "$RL_STORE/.rl-secure/projects/${Project}/packages/${Package}/versions/${RL_DIFF_WITH}" ]
     then
-        echo "That version has not been scanned yet: ${RL_DIFF_WITH}"
+        echo "::notice That version has not been scanned yet: ${RL_DIFF_WITH} in Project: ${Project} and Package: ${Package}"
+        echo "::notice No diff scan will be executed, only ${RL_PACKAGE_URL} will be scanned"
         return
     fi
 
@@ -133,6 +154,8 @@ do_proxy_data()
 
 scan_with_store()
 {
+    # rl-store will be initalized if it is empty
+
     docker run --rm -u $(id -u):$(id -g) \
     -e "RLSECURE_ENCODED_LICENSE=${RLSECURE_ENCODED_LICENSE}" \
     -e "RLSECURE_SITE_KEY=${RLSECURE_SITE_KEY}" \
@@ -180,14 +203,19 @@ what_scan_type()
 
 main()
 {
-    do_verbose
+    if [ "${RL_VERBOSE}" != "false" ]
+    then
+        do_verbose
+    fi
 
+    validate_params
     prep_report
     prep_paths
+
     makeDiffWith
     do_proxy_data
 
-    if [ what_scan_type == "0" ]
+    if what_scan_type
     then
         scan_no_store
     else
