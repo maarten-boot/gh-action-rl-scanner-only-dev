@@ -226,7 +226,7 @@ test_missing_status()
     }
 }
 
-set_status_PassFail
+set_status_PassFail()
 {
     echo "description=$STATUS" >> $GITHUB_OUTPUT
     echo "$STATUS" >> $GITHUB_STEP_SUMMARY
