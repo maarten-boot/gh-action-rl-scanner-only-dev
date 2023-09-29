@@ -67,8 +67,10 @@ inputs:
 outputs:
   description:
     description: 'The result of the action: a string terminating in FAIL or PASS'
+    value: ${{ steps.rl-scanner.outputs.description }}
   status:
     description: 'The single word result of the action: success, failure or error'
+    value: ${{ steps.rl-scanner.outputs.status }}
 
 runs:
   using: "composite"

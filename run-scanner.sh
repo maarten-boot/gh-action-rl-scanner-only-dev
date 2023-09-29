@@ -127,7 +127,7 @@ makeDiffWith()
     DIFF_WITH="--diff-with=${RL_DIFF_WITH}"
 }
 
-do_proxy_data()
+prep_proxy_data()
 {
     PROXY_DATA=""
 
@@ -154,8 +154,10 @@ do_proxy_data()
 
 scan_with_store()
 {
-    # rl-store will be initalized if it is empty
+    local - # auto restore the next line on function end
+    set +e # we do our own error handling in this func
 
+    # rl-store will be initalized if it is empty
     docker run --rm -u $(id -u):$(id -g) \
     -e "RLSECURE_ENCODED_LICENSE=${RLSECURE_ENCODED_LICENSE}" \
     -e "RLSECURE_SITE_KEY=${RLSECURE_SITE_KEY}" \
@@ -169,11 +171,16 @@ scan_with_store()
             --replace \
             --report-path=/report \
             --report-format=all \
-            ${DIFF_WITH}
+            ${DIFF_WITH} 1>1 2>2
+    RR=$?
+    STATUS=$( grep 'Scan result:' 1 )
 }
 
 scan_no_store()
 {
+    local - # auto restore the next line on function end
+    set +e # we do our own error handling in this func
+
     docker run --rm -u $(id -u):$(id -g) \
     -e "RLSECURE_ENCODED_LICENSE=${RLSECURE_ENCODED_LICENSE}" \
     -e "RLSECURE_SITE_KEY=${RLSECURE_SITE_KEY}" \
@@ -183,7 +190,9 @@ scan_no_store()
     reversinglabs/rl-scanner:latest \
         rl-scan --package-path="/packages/${A_FILE}" \
             --report-path=/report \
-            --report-format=all
+            --report-format=all 1>1 2>2
+    RR=$?
+    STATUS=$( grep 'Scan result:' 1 )
 }
 
 what_scan_type()
@@ -201,6 +210,39 @@ what_scan_type()
     return 1
 }
 
+test_missing_status()
+{
+    [ -z "$STATUS" ] && {
+        cat 2
+
+        msg="Fatal: cannot find the Scan result in the output"
+        echo "::error::$msg"
+        echo "$msg" >> $GITHUB_STEP_SUMMARY
+
+        echo "description=$msg" >> $GITHUB_OUTPUT
+        echo "status=error" >> $GITHUB_OUTPUT
+
+        exit 101
+    }
+}
+
+set_status_PassFail
+{
+    echo "description=$STATUS" >> $GITHUB_OUTPUT
+    echo "$STATUS" >> $GITHUB_STEP_SUMMARY
+
+    echo "$STATUS" | grep -q FAIL
+    if [ "$?" == "0" ]
+    then
+        echo "status=failure" >> $GITHUB_OUTPUT
+        echo "::error::$STATUS"
+    else
+        echo "status=success" >> $GITHUB_OUTPUT
+        echo "::notice::$STATUS"
+    fi
+
+}
+
 main()
 {
     if [ "${RL_VERBOSE}" != "false" ]
@@ -211,9 +253,9 @@ main()
     validate_params
     prep_report
     prep_paths
+    prep_proxy_data
 
     makeDiffWith
-    do_proxy_data
 
     if what_scan_type
     then
@@ -221,6 +263,22 @@ main()
     else
         scan_with_store
     fi
+
+    if [ "${RL_VERBOSE}" != "false" ]
+    then
+        echo "::notice ## Stdout of reversinglabs/rl-scanner"
+        cat 1
+        echo
+
+        echo "::notice ## Stderr of reversinglabs/rl-scanner"
+        cat 2
+        echo
+    fi
+
+    test_missing_status
+    set_status_PassFail
+
+    exit ${RR}
 }
 
 main $@
