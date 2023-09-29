@@ -159,21 +159,21 @@ scan_with_store()
 
     # rl-store will be initalized if it is empty
     docker run --rm -u $(id -u):$(id -g) \
-    -e "RLSECURE_ENCODED_LICENSE=${RLSECURE_ENCODED_LICENSE}" \
-    -e "RLSECURE_SITE_KEY=${RLSECURE_SITE_KEY}" \
-    ${PROXY_DATA} \
-    -v "${A_DIR}/:/packages:ro" \
-    -v "${R_PATH}/:/report" \
-    -v "${RL_STORE}/rl-store" \
-    reversinglabs/rl-scanner:latest \
-        rl-scan \
-            --rl-store=/rl-store \
-            --purl=${RL_PACKAGE_URL} \
-            --replace \
-            --package-path="/packages/${A_FILE}" \
-            --report-path=/report \
-            --report-format=all \
-            ${DIFF_WITH} 1>1 2>2
+        -e "RLSECURE_ENCODED_LICENSE=${RLSECURE_ENCODED_LICENSE}" \
+        -e "RLSECURE_SITE_KEY=${RLSECURE_SITE_KEY}" \
+        ${PROXY_DATA} \
+        -v "${A_DIR}/:/packages:ro" \
+        -v "${R_PATH}/:/report" \
+        -v "${RL_STORE}/rl-store" \
+        reversinglabs/rl-scanner:latest \
+            rl-scan \
+                --rl-store=/rl-store \
+                --purl=${RL_PACKAGE_URL} \
+                --replace \
+                --package-path="/packages/${A_FILE}" \
+                --report-path=/report \
+                --report-format=all \
+                ${DIFF_WITH} 1>1 2>2
     RR=$?
     STATUS=$( grep 'Scan result:' 1 )
 }
@@ -184,15 +184,15 @@ scan_no_store()
     set +e # we do our own error handling in this func
 
     docker run --rm -u $(id -u):$(id -g) \
-    -e "RLSECURE_ENCODED_LICENSE=${RLSECURE_ENCODED_LICENSE}" \
-    -e "RLSECURE_SITE_KEY=${RLSECURE_SITE_KEY}" \
-    ${PROXY_DATA} \
-    -v "${A_DIR}/:/packages:ro" \
-    -v "${R_PATH}/:/report" \
-    reversinglabs/rl-scanner:latest \
-        rl-scan --package-path="/packages/${A_FILE}" \
-            --report-path=/report \
-            --report-format=all 1>1 2>2
+        -e "RLSECURE_ENCODED_LICENSE=${RLSECURE_ENCODED_LICENSE}" \
+        -e "RLSECURE_SITE_KEY=${RLSECURE_SITE_KEY}" \
+        ${PROXY_DATA} \
+        -v "${A_DIR}/:/packages:ro" \
+        -v "${R_PATH}/:/report" \
+        reversinglabs/rl-scanner:latest \
+            rl-scan --package-path="/packages/${A_FILE}" \
+                --report-path=/report \
+                --report-format=all 1>1 2>2
     RR=$?
     STATUS=$( grep 'Scan result:' 1 )
 }
