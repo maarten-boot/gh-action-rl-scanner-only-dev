@@ -43,8 +43,8 @@ runs:
     - id: rl-scanner
       shell: bash
       env:
-        REPORT_PATH=${{ inputs.report-path }}
-        MY_ARTIFACT_TO_SCAN_PATH=${{ inputs.artifact-to-scan }}
+        REPORT_PATH: ${{ inputs.report-path }}
+        MY_ARTIFACT_TO_SCAN_PATH: ${{ inputs.artifact-to-scan }}
       run: |
         if [ -z "${REPORT_PATH}" ]
         then
