@@ -82,7 +82,7 @@ extractProjectFromPackageUrl()
     awk '{
         sub(/@.*/,"")       # remove the @Version part
         split($0, a , "/")  # we expect $Project/$Package
-        print a[0]          # print Project
+        print a[1]          # print Project
     }'
 }
 
@@ -92,7 +92,7 @@ extractPackageFromPackageUrl()
     awk '{
         sub(/@.*/,"")       # remove the @Version part
         split($0, a , "/")  # we expect $Project/$Package
-        print a[1]          # print Package
+        print a[2]          # print Package
     }'
 }
 
