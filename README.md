@@ -72,6 +72,20 @@ ReversingLabs sends both parts of the license to users on request.
 Users must then encode the license file with the Base64 algorithm.
 The Base64-encoded license string and the site key must be provided to the action using [environment variables](#environment-variables).
 
+### Rl-store
+A package store can be configured with the `rl-store` parameter. This will require either a path on the runner (if only one runner is used) or a shared storage location with NFS or CIFS (if multiple runners will perform the scan actions). Configuring `rl-store` only make sense on self hosted runners.
+
+When configuring a `rl-store` you will also have to provide the package url in the parameter `rl-package-url` and vice versa, if you specify a `rl-package-url` you will have to provide a `rl-store`.
+
+### Diff-scan
+When using a `rl-store`, scan results will be stored under the package url `<Project>/<Package>@<Version>`. You may want to scan against a previously scanned version in the same `<Project>/<Package>`. This can be configured with the `rl-diff-with` parameter. The action will verify that the requested version was actually scanned before and ignore the request for a `diff-scan` if no scanned version exists at: `<Project>/<Package>@<Diff-Scan-Version>`.
+
+### Proxy
+The user can configure a proxy server with the `rl-proxy-*` parameters.
+
+When using `rl-proxy-server` the port also has to be specified with `rl-proxy-port`.
+
+If the proxy uses authentication the `user` and `password` for authentication can be configured with `rp-proxy-user` and `rl-proxy-password`.
 
 ### Inputs
 
@@ -79,6 +93,15 @@ The Base64-encoded license string and the site key must be provided to the actio
 | :--------- | :------ | :------ |
 | `artifact-to-scan` | Yes | The software package (build artifact) you want to scan. Provide the artifact file path relative to the `github.workspace` |
 | `report-path` | No | The directory where the action will store analysis reports for the build artifact. The directory must be empty. Provide the directory path relative to the `github.workspace`. Default value is `MyReportDir` |
+|rl-store|No|The rl-secure package store |
+|rl-package-url|No|The package url to use when using a custom rl-store|
+|rl-diff-with|No|A previously scanned version in the same Project/Package you want to diff against|
+|rl-verbose|No| Provide more feedback while running the scan|
+|rl-proxy-server|No|A server to use for proxy (ip adderss or dns name)|
+|rl-proxy-port|No|The proxy port on the prox server|
+|rl-proxy-user|No|If the proxy has authenication use this user|
+|rl-proxy-password|No|If the proxy has authenication use this password|
+
 
 
 ### Outputs

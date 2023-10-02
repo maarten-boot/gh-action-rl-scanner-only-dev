@@ -1,7 +1,5 @@
 #! /bin/bash
 
-# proxy tested ok
-
 do_verbose()
 {
     cat <<!
