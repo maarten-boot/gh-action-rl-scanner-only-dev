@@ -1,5 +1,7 @@
 #! /bin/bash
 
+# proxy tested ok
+
 do_verbose()
 {
     cat <<!
@@ -213,10 +215,21 @@ what_scan_type()
     return 1
 }
 
+showStdOutErr()
+{
+    echo "::notice ## Stdout of reversinglabs/rl-scanner"
+    cat 1
+    echo
+
+    echo "::notice ## Stderr of reversinglabs/rl-scanner"
+    cat 2
+    echo
+}
+
 test_missing_status()
 {
     [ -z "$STATUS" ] && {
-        cat 2
+        showStdOutErr
 
         msg="Fatal: cannot find the Scan result in the output"
         echo "::error::$msg"
@@ -269,13 +282,7 @@ main()
 
     if [ "${RL_VERBOSE}" != "false" ]
     then
-        echo "::notice ## Stdout of reversinglabs/rl-scanner"
-        cat 1
-        echo
-
-        echo "::notice ## Stderr of reversinglabs/rl-scanner"
-        cat 2
-        echo
+        showStdOutErr
     fi
 
     test_missing_status
